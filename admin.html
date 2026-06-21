@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial; background-color: #f0f0f0; }
+  nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 40px; background-color: white; flex-wrap: wrap;
+  }
+  .logo { font-size: 24px; font-weight: bold; }
+  .logo span { color: purple; }
+  .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+  .container h1 { color: #333; margin-bottom: 10px; }
+  .container h1 span { color: purple; }
+  .container h2 { color: purple; margin: 30px 0 15px; }
+  .form-box {
+    background-color: white; padding: 20px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px;
+  }
+  input, textarea {
+    width: 100%; padding: 10px; margin-bottom: 12px;
+    border: 1px solid #ddd; border-radius: 8px; font-family: Arial;
+  }
+  button {
+    background-color: purple; color: white; padding: 10px 20px;
+    border: none; border-radius: 25px; font-weight: bold; cursor: pointer;
+  }
+  .message-card, .service-card {
+    background-color: white; padding: 15px; border-radius: 10px;
+    margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .service-card h3 { color: purple; margin-bottom: 4px; }
+  .service-card p { color: #555; font-size: 14px; }
+  .actions button {
+    padding: 6px 12px; margin-left: 6px; font-size: 13px;
+  }
+  .btn-delete { background-color: #d9534f; }
+  #status { color: purple; font-weight: bold; margin-top: 8px; }
+</style>
+<title>Admin - Manage Website</title>
+</head>
+<body>
+
+<nav>
+  <div class="logo">M<span>.</span></div>
+</nav>
+
+<div class="container">
+  <h1>Admin <span>Panel</span></h1>
+
+  <h2>➕ Add New Service</h2>
+  <div class="form-box">
+    <input type="text" id="icon" placeholder="Icon (emoji jaise 📈)">
+    <input type="text" id="title" placeholder="Service Title">
+    <textarea id="desc" rows="3" placeholder="Service Description"></textarea>
+    <button onclick="addService()">Add Service</button>
+    <p id="status"></p>
+  </div>
+
+  <h2>📋 Existing Services</h2>
+  <div id="services-list">Loading...</div>
+
+  <h2>📩 Contact Messages</h2>
+  <div id="messages-list">Loading...</div>
+</div>
+
+<script>
+  const API = 'http://localhost:3000';
+
+  function addService() {
+    const icon = document.getElementById('icon').value;
+    const title = document.getElementById('title').value;
+    const desc = document.getElementById('desc').value;
+
+    fetch(API + '/services', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ icon, title, desc })
+    })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('status').innerHTML = 'Service add ho gaya!';
+      document.getElementById('icon').value = '';
+      document.getElementById('title').value = '';
+      document.getElementById('desc').value = '';
+      loadServices();
+    });
+  }
+
+  function deleteService(id) {
+    fetch(API + '/services/' + id, { method: 'DELETE' })
+      .then(res => res.json())
+      .then(data => loadServices());
+  }
+
+  function loadServices() {
+    fetch(API + '/services')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('services-list');
+        container.innerHTML = '';
+        if (!data || Object.keys(data).length === 0) {
+          container.innerHTML = '<p>Koi service nahi hai.</p>';
+          return;
+        }
+        Object.keys(data).forEach(key => {
+          const s = data[key];
+          const card = document.createElement('div');
+          card.className = 'service-card';
+          card.innerHTML = `
+            <div>
+              <h3>${s.icon} ${s.title}</h3>
+              <p>${s.desc}</p>
+            </div>
+            <div class="actions">
+              <button class="btn-delete" onclick="deleteService('${key}')">Delete</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      });
+  }
+
+  function loadMessages() {
+    fetch(API + '/messages')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('messages-list');
+        container.innerHTML = '';
+        if (!data) {
+          container.innerHTML = '<p>Koi message nahi hai.</p>';
+          return;
+        }
+        Object.keys(data).reverse().forEach(key => {
+          const msg = data[key];
+          const card = document.createElement('div');
+          card.className = 'message-card';
+          card.innerHTML = `<div><h3>${msg.name}</h3><p>${msg.email}</p><p>${msg.message}</p></div>`;
+          container.appendChild(card);
+        });
+      });
+  }
+
+  loadServices();
+  loadMessages();
+</script>
+
+</body>
+</html>

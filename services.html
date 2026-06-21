@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial; background-color: #f0f0f0; }
+  nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 40px; background-color: white; flex-wrap: wrap;
+  }
+  .logo { font-size: 24px; font-weight: bold; }
+  .logo span { color: purple; }
+  nav .links a {
+    margin-right: 15px; text-decoration: none; color: #333;
+    font-weight: bold; font-size: 14px;
+  }
+  .btn-purple {
+    background-color: purple; color: white; padding: 10px 20px;
+    border-radius: 25px; text-decoration: none; font-weight: bold;
+  }
+  .container {
+    max-width: 1000px; margin: 0 auto; padding: 50px 20px; text-align: center;
+  }
+  .container h1 { color: #333; font-size: 32px; margin-bottom: 40px; }
+  .container h1 span { color: purple; }
+  .services-grid {
+    display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;
+  }
+  .service-card {
+    background-color: white; padding: 25px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 260px; text-align: left;
+  }
+  .service-card h3 { color: purple; margin-bottom: 10px; }
+  .service-card p { color: #666; font-size: 14px; line-height: 1.5; }
+
+  @media (max-width: 768px) {
+    nav { gap: 10px; }
+    nav .links a { margin-right: 8px; font-size: 12px; }
+    .logo { font-size: 18px; }
+    .btn-purple { padding: 6px 12px; font-size: 13px; }
+    .container h1 { font-size: 26px; }
+    .service-card { width: 100%; }
+  }
+</style>
+<title>Services - Muneeb Ul Rehman</title>
+</head>
+<body>
+
+<nav>
+  <div class="logo">M<span>.</span></div>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <a href="contact.html" class="btn-purple">Let's Talk</a>
+</nav>
+
+<div class="container">
+  <h1>My <span>Services</span></h1>
+  <div class="services-grid" id="services-grid">Loading...</div>
+</div>
+
+<script>
+  fetch('http://localhost:3000/services')
+    .then(res => res.json())
+    .then(data => {
+      const grid = document.getElementById('services-grid');
+      grid.innerHTML = '';
+      if (!data || Object.keys(data).length === 0) {
+        grid.innerHTML = '<p>Abhi koi service nahi hai.</p>';
+        return;
+      }
+      Object.keys(data).forEach(key => {
+        const s = data[key];
+        const card = document.createElement('div');
+        card.className = 'service-card';
+        card.innerHTML = `<h3>${s.icon} ${s.title}</h3><p>${s.desc}</p>`;
+        grid.appendChild(card);
+      });
+    })
+    .catch(() => {
+      document.getElementById('services-grid').innerHTML = '<p>Services load nahi ho sakin.</p>';
+    });
+</script>
+
+</body>
+</html>

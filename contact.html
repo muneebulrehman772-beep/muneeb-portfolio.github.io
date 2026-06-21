@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Arial;
+    background-color: #f0f0f0;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: white;
+    flex-wrap: wrap;
+  }
+  .logo {
+    font-size: 15pxpx;
+    font-weight: bold;
+  }
+  .logo span {
+    color: purple;
+  }
+  nav .links a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+  .btn-purple {
+    background-color: purple;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 50px 20px;
+  }
+  .container h1 {
+    color: #333;
+    font-size: 32px;
+  }
+  .container h1 span {
+    color: purple;
+  }
+  .container p {
+    color: #555;
+    margin: 15px 0;
+  }
+  .form-box {
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-top: 25px;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: Arial;
+  }
+  #response {
+    color: purple;
+    font-weight: bold;
+  }
+
+  @media (max-width: 768px) {
+    nav { gap: 10px; }
+    .container h1 { font-size: 26px; }
+  }
+</style>
+<title>Contact - Muneeb Ul Rehman</title>
+</head>
+<body>
+
+<nav>
+  <div class="logo">M<span>.</span></div>
+ <div class="links">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+</div>
+  <a href="contact.html" class="btn-purple">Let's Talk</a>
+</nav>
+
+<div class="container">
+  <h1>Contact <span>Me</span></h1>
+  <p>📞 0321-1660903</p>
+  <p>📧 Mr.muneebulrehman786@gmail.com</p>
+  <p>📍 Lahore, Pakistan</p>
+
+  <div class="form-box">
+    <input type="text" id="name" placeholder="Apka naam">
+    <input type="email" id="email" placeholder="Apka email">
+    <textarea id="msg" rows="5" placeholder="Apka message"></textarea>
+    <button class="btn-purple" onclick="sendMessage()">Submit</button>
+    <p id="response"></p>
+  </div>
+</div>
+
+<script>
+  function sendMessage(){
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const msg = document.getElementById("msg").value;
+
+    fetch('http://localhost:3000/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, message: msg })
+    })
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("response").innerHTML = data.reply;
+    })
+    .catch(error => {
+      document.getElementById("response").innerHTML = "Error: Server se connect nahi ho saka.";
+    });
+  }
+</script>
+</body>
+</html>
